@@ -1,0 +1,28 @@
+{
+  "name": "holkerveen/pssg",
+  "description": "PHP Static Site Generator",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Henk van de Berg",
+      "email": "henk@holkerveen.nl"
+    }
+  ],
+  "require": {
+    "ext-inotify": "*",
+    "ext-pcntl": "*",
+    "ext-json": "*",
+    "ext-sockets": "*",
+    "psr/http-message": "^1.0"
+  },
+  "bin": ["bin/pssg"],
+  "require-dev": {
+    "erusev/parsedown": "^1.7",
+    "symfony/console": "^5.0",
+    "psr/log": "^1.1",
+    "mustangostang/spyc": "^0.6.3"
+  },
+  "autoload": {
+    "psr-4": {"Holkerveen\\Pssg\\":  "src/"}
+  }
+}

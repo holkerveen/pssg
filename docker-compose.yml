@@ -1,0 +1,16 @@
+version: "3.4"
+services:
+  pssg:
+    container_name: pssg
+    build:
+      context: docker
+    working_dir: /app
+    volumes:
+    - ./:/app
+    ports:
+    - 80:80
+    environment:
+    - PHP_IDE_CONFIG=serverName=Development
+    - DOCKER_HOST
+    command: pssg serve ./example
+

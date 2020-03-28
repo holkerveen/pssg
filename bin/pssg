@@ -1,0 +1,56 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Holkerveen\Pssg\Command\BuildCommand;
+use Holkerveen\Pssg\Command\ServeCommand;
+use Holkerveen\Pssg\Compiler\Sass;
+use Holkerveen\Pssg\Compiler\Markdown;
+use Holkerveen\Pssg\Compiler\Typescript;
+use Holkerveen\Pssg\Container;
+use Holkerveen\Pssg\HasContainerInterface;
+use Holkerveen\Pssg\Logger;
+use Symfony\Component\Console\Application;
+
+echo "Pssg started\n";
+$container = new Container();
+$container->bootstrap([
+  'logger' => function () {
+    return new Logger('php://stdout');
+  },
+  'compiler.markdown' => function () use ($container) {
+    $compiler = new Markdown();
+    $compiler->setMarkdownParser($container->get('parser.markdown'));
+    return $compiler;
+  },
+  'compiler.scss' => function () {
+    $compiler = new Sass();
+    $compiler->setTemporaryPath("/tmp/pssg/compiler/scss");
+    return $compiler;
+  },
+  'compiler.typescript' => function () {
+    $compiler = new Typescript();
+    $compiler->setTemporaryPath("/tmp/pssg/compiler/typescript");
+    return $compiler;
+  },
+  'parser.markdown' => function() {
+    return new \Holkerveen\Pssg\ServiceProvider\Markdown();
+  }
+]);
+
+$app = new Application();
+
+$commandBuilder = function ($className) use ($container) {
+  $inst = new $className;
+  if ($inst instanceof HasContainerInterface) {
+    $inst->setContainer($container);
+  }
+  return $inst;
+};
+
+$app->add($commandBuilder(ServeCommand::class));
+$app->add($commandBuilder(BuildCommand::class));
+
+
+$app->run();
